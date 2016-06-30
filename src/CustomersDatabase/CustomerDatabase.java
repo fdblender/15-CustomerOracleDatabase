@@ -82,7 +82,7 @@ public class CustomerDatabase {
 			// if it found the state, then update the state id
 			if (!columns[0].isEmpty()) {
 				stateid = columns[0];				
-				//System.out.println("columns city: "+stateid);
+				System.out.println("columns state: "+stateid);
 				
 				// update the city id
 				sql = "update customers set stateid ="+stateid
