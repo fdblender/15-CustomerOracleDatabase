@@ -89,8 +89,7 @@ public class DBUtil {
 	public static ArrayList<HashMap<String, String>> execGet(String sql) {
 		try {
 			ResultSet rs; // result set of query
-			PreparedStatement pstmt = null;
-			String fields[] = new String[20];
+			PreparedStatement pstmt = null;			
 			ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
 
 			getConnection();
@@ -142,10 +141,9 @@ public class DBUtil {
 
 	public static int executeUpdate(String sql) {
 		int result = 0;
-		try {
+		try {String fields[] = new String[20];
 
-			PreparedStatement pstmt = null;
-			String fields[] = new String[20];
+			PreparedStatement pstmt = null;			
 
 			getConnection();
 			if (conn == null) {
