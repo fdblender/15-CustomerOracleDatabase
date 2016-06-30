@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class DBUtil {
@@ -15,7 +18,7 @@ public class DBUtil {
 		// TODO Auto-generated constructor stub
 	}
 	
-	private static void getConnection() {
+	public static void getConnection() {
 		try {
 		if( conn == null) {			
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -29,7 +32,29 @@ public class DBUtil {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}			
-	}	
+	}
+	
+	// overload method to open a connection with username and password
+	public static boolean getConnection(String username, String password) {
+		String connStr;
+		try {
+		if( conn == null) {			
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+		// 	con = DriverManager.getConnection("jdbc:oracle:thin:sys as
+		// sysdba/oracle@localhost:1521:orcl");
+			
+			connStr = "jdbc:oracle:thin:"+username+"/"+password+"@localhost:1521:orcl";
+			
+			conn = DriverManager.getConnection(connStr);
+			return true;
+		}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+		return false;
+	}
 	
 	public static String[] executeGet(String sql) {
 		try {			
@@ -55,7 +80,48 @@ public class DBUtil {
 								
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static ArrayList<HashMap<String, String>> execGet(String sql) {
+		try {			
+			ResultSet rs;   // result set of query
+			PreparedStatement pstmt = null;			
+			String fields[] = new String[20];	
+			ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
+			
+			getConnection();
+			if (conn == null) {
+				System.out.println("con is null");
+			}
+			pstmt = conn.prepareStatement(sql);
+			
+			rs = pstmt.executeQuery();
+			
+			// convert result set to array list
+			ResultSetMetaData md = rs.getMetaData();
+			int columns = md.getColumnCount();
+			//ArrayList list = new ArrayList(50);			  
+			while (rs.next()){
+			     HashMap<String,String> row = new HashMap<String,String>(columns);
+			     for(int i=1; i<=columns; ++i){           
+			       row.put(md.getColumnName(i),rs.getString(i));			       
+			     }
+			     list.add(row);
+			}
+
+			rs.close();
+			pstmt.close();
+			return list;					
+								
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
