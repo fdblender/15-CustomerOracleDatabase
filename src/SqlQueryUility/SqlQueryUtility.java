@@ -33,8 +33,8 @@ public class SqlQueryUtility {
 
 	public static void main(String[] args) {
 		Scanner scan = new Scanner(System.in);
-		String sql, username, password;
-		boolean found;
+		String sql, username, password;	
+		String[] sqlType = null;
 		boolean update = false;
 		ArrayList<HashMap<String, String>> resultList;
 
@@ -61,19 +61,31 @@ public class SqlQueryUtility {
 
 			else {
 				// parse the string to determine if insert or update
-
-				// if select statement
-				if (!update) {
+				String[] words = null;				
+				sqlType = sql.split(" ");
+				
+				// if sql is a select statement
+				if (sqlType[0].toLowerCase().equals("select")) {
+					System.out.println("select statement");
 					resultList = DBUtil.execGet(sql);
 					// display records 
-					displayResults(resultList);
+					if (resultList !=null) {
+						displayResults(resultList);
+					} else {
+						System.out.println("No records found.");
+					}
 					// or write them to a file					
 
-				} else {
-
+				} else if (sqlType[0].toLowerCase().equals("update")) {	
+					System.out.println("update statement");
 					if (DBUtil.executeUpdate(sql) > 0) {
 						System.out.println("The record was updated");
+					} else {
+						System.out.println("No update made.");
 					}
+					 
+				} else {
+					System.out.println("Error: Invalid SQL statement.");
 				}
 			}
 
